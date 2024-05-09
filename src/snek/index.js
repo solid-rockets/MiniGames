@@ -2,16 +2,17 @@
 const BLOCK_SIZE = 8;
 const SCREEN_WIDTH_BLOCKS = 100;
 const SCREEN_HEIGHT_BLOCKS = 50;
+const FOOD_WAIT_INC = 5;
 
 const Direction = Object.freeze({ // Enums are not supported in JS as a type.
-  UP: 0,
-  DOWN: 1,
-  LEFT: 2,
-  RIGHT: 3
+  KEEP: 0,
+  UP: 1,
+  DOWN: 2,
+  LEFT: 3,
+  RIGHT: 4
 });
 
 const BlockTypes = Object.freeze({
-  EMPTY: 0,
   EGG: 1,
   HEAD: 2,
   BODY: 3,
@@ -24,6 +25,7 @@ const BlockTypes = Object.freeze({
 // The game state.
 let assets = Array(BlockTypes.MAX);
 let board = null;
+let snake = null;
 
 // SETUP LOGIC.
 function loadAssets() {
@@ -41,11 +43,20 @@ function createBlock(blockType) {
   // All other block types are objects on the board.
   return {
     type: blockType,
-    deg: 0
+    deg: 0,
+    dir: Direction.KEEP
   };
 }
 
 function createBoard() {
+  // i represents the rows, j represents the columns.
+  // i runs from top to bottom, j runs from left to right.
+  // 0,0 is the top left corner.
+  // +--> j
+  // |
+  // |
+  // v i
+
   const board = [];
   
   for (let i = 0; i < SCREEN_HEIGHT_BLOCKS; i++) {
@@ -71,9 +82,22 @@ function createWalls (board) {
   return board;
 }
 
-function createNewSnake() {
-  // TODO.
+function createBodyPart() {
+  return {
+    x: 0,
+    y: 0,
+    dir: Direction.RIGHT,
+    nextDir: Direction.KEEP
+  };
 }
+
+function createNewSnake() {
+  return {
+    head: createBodyPart(),
+    tail: createBodyPart(),
+    wait: 5 // Incremented whenever the snake eats an egg.
+  }
+};
 
 function setup() {
   const pixelWidth = SCREEN_WIDTH_BLOCKS * BLOCK_SIZE;
@@ -85,6 +109,7 @@ function setup() {
   loadAssets();
 
   board = createWalls(createBoard()); // All in setup, no surprises.
+  snake = createNewSnake();
 }
 
 // DRAWING LOGIC.
@@ -127,6 +152,18 @@ function drawBoard() {
   }
 }
 
+function moveSnake() {
+
+}
+
+function checkInput() {
+
+}
+
 function draw() {
+  // This is the game loop.
+  // Snake must be moved before drawing the board.
+  moveSnake();
+  checkInput();
   drawBoard();
 }
