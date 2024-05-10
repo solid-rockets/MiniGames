@@ -30,21 +30,23 @@ let snake = null;
 // SETUP LOGIC.
 function loadAssets() {
   // Load images for the game.
-  assets[BlockTypes.EGG] = loadImage('egg.gif');
-  assets[BlockTypes.HEAD] = loadImage('head.gif');
-  assets[BlockTypes.BODY] = loadImage('body.gif');
-  assets[BlockTypes.TURN] = loadImage('turn.gif');
-  assets[BlockTypes.TAIL] = loadImage('tail.gif');
+  assets[BlockTypes.EGG] = loadImage('./assets/egg.gif');
+  assets[BlockTypes.HEAD] = loadImage('./assets/head.gif');
+  assets[BlockTypes.BODY] = loadImage('./assets/body.gif');
+  assets[BlockTypes.TURN] = loadImage('./assets/turn.gif');
+  assets[BlockTypes.TAIL] = loadImage('./assets/tail.gif');
   assets[BlockTypes.WALL] = loadImage('./assets/wall.gif');
 }
 
 function createBlock(blockType) {
   // No empty - it's just a 0. This is a memory optimization.
   // All other block types are objects on the board.
+  // The dir is the direction the tail is supposed to travel,
+  // plus it plays a role in orienting the turn/body blocks.
   return {
     type: blockType,
     deg: 0,
-    dir: Direction.KEEP
+    dir: undefined // Will get a val from enum; TS would help here.
   };
 }
 
@@ -84,19 +86,23 @@ function createWalls (board) {
 
 function createBodyPart() {
   return {
-    x: 0,
-    y: 0,
-    dir: Direction.RIGHT,
-    nextDir: Direction.KEEP
+    x: 20,
+    y: 20,
+    dir: Direction.UP,
+    nextDir: Direction.UP,
   };
 }
 
 function createNewSnake() {
-  return {
+  const snake = {
     head: createBodyPart(),
     tail: createBodyPart(),
-    wait: 5 // Incremented whenever the snake eats an egg.
-  }
+    wait: 3 // Incremented whenever the snake eats an egg.
+  };
+
+  snake.tail.y = snake.head.y + 1; // TODO: any direction
+
+  return snake;
 };
 
 function setup() {
@@ -110,10 +116,14 @@ function setup() {
 
   board = createWalls(createBoard()); // All in setup, no surprises.
   snake = createNewSnake();
+
+  frameRate(5);
 }
 
 // DRAWING LOGIC.
 function drawBlock(asset, x, y) {
+  // NOTE: this is good enough for now, but
+  // I'll need to rotate the blocks for the turns and body.
   image(asset, x * BLOCK_SIZE, y * BLOCK_SIZE);
 }
 
@@ -132,17 +142,11 @@ function drawBoard() {
         case BlockTypes.EGG:
           drawBlock(assets[BlockTypes.EGG], j, i);
           break;
-        case BlockTypes.HEAD:
-          drawBlock(assets[BlockTypes.HEAD], j, i);
-          break;
         case BlockTypes.BODY:
           drawBlock(assets[BlockTypes.BODY], j, i);
           break;
         case BlockTypes.TURN:
           drawBlock(assets[BlockTypes.TURN], j, i);
-          break;
-        case BlockTypes.TAIL:
-          drawBlock(assets[BlockTypes.TAIL], j, i);
           break;
         case BlockTypes.WALL:
           drawBlock(assets[BlockTypes.WALL], j, i);
@@ -152,18 +156,92 @@ function drawBoard() {
   }
 }
 
-function moveSnake() {
+function incPosBodyPart(part) {
+  switch (part.dir) {
+    case Direction.UP:
+      part.y--;
+      break;
+    case Direction.DOWN:
+      part.y++;
+      break;
+    case Direction.LEFT:
+      part.x--;
+      break;
+    case Direction.RIGHT:
+      part.x++;
+      break;
+  }
+}
 
+function createBodyUnderHead() {
+  // Decide based on current and next directions.
+  const bodyBlock = snake.head.dir === snake.head.nextDir ? 
+    createBlock(BlockTypes.BODY) : 
+    createBlock(BlockTypes.TURN);
+
+  bodyBlock.dir = snake.head.dir;
+
+  board[snake.head.y][snake.head.x] = bodyBlock;
+}
+
+function clearBlockAtBodyPartPos(part) {
+  board[part.y][part.x] = 0;
+}
+
+function getNextDirForTail() {
+  const nextBlock = board[snake.tail.y][snake.tail.x];
+
+  if (!nextBlock) {
+    return;
+  }
+
+  snake.tail.dir = nextBlock.dir;
+  clearBlockAtBodyPartPos(snake.tail);
+}
+
+function moveSnake() {
+  // Move the head.
+  // The idea is to create a body block under the head before it moves.
+  createBodyUnderHead();
+  incPosBodyPart(snake.head);
+  snake.head.dir = snake.head.nextDir;
+
+  // Move the tail.
+  if(snake.wait == 0) {
+    incPosBodyPart(snake.tail);
+    getNextDirForTail();
+    snake.tail.dir = snake.tail.nextDir;
+  } else {
+    snake.wait--;
+  }
+
+  // Check for collisions.
+  // Check for egg collisions.
+  // Check for wall collisions.
+  // Check for self collisions.
 }
 
 function checkInput() {
+  // TODO.
+}
 
+function drawHead() {
+  drawBlock(assets[BlockTypes.HEAD], snake.head.x, snake.head.y);
+}
+
+function drawTail() {
+  drawBlock(assets[BlockTypes.TAIL], snake.tail.x, snake.tail.y);
 }
 
 function draw() {
   // This is the game loop.
   // Snake must be moved before drawing the board.
-  moveSnake();
   checkInput();
+
+  moveSnake();
+
+  background(0);
   drawBoard();
+  drawTail();
+  drawHead();
 }
