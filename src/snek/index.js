@@ -196,7 +196,7 @@ function getNextDirForTail() {
     return;
   }
 
-  snake.tail.dir = nextBlock.dir;
+  snake.tail.nextDir = nextBlock.dir;
   clearBlockAtBodyPartPos(snake.tail);
 }
 
@@ -227,7 +227,15 @@ function moveSnake() {
 }
 
 function checkInput() {
-  // TODO.
+  if (keyIsDown(UP_ARROW) && snake.head.dir !== Direction.DOWN) {
+    snake.head.nextDir = Direction.UP;
+  } else if (keyIsDown(DOWN_ARROW) && snake.head.dir !== Direction.UP) {
+    snake.head.nextDir = Direction.DOWN;
+  } else if (keyIsDown(LEFT_ARROW) && snake.head.dir !== Direction.RIGHT) {
+    snake.head.nextDir = Direction.LEFT;
+  } else if (keyIsDown(RIGHT_ARROW) && snake.head.dir !== Direction.LEFT) {
+    snake.head.nextDir = Direction.RIGHT;
+  }
 }
 
 function drawHead() {
