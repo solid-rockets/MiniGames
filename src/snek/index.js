@@ -26,6 +26,7 @@ const BlockTypes = Object.freeze({
 let assets = Array(BlockTypes.MAX);
 let board = null;
 let snake = null;
+let gameOver = false;
 
 // SETUP LOGIC.
 function loadAssets() {
@@ -215,10 +216,14 @@ function moveSnake() {
     snake.wait--;
   }
 
-  // Check for collisions.
-  // Check for egg collisions.
   // Check for wall collisions.
+  if (board[snake.head.y][snake.head.x].type === BlockTypes.WALL) {
+    gameOver = true;
+  }
+
   // Check for self collisions.
+
+  // Check for egg collisions.
 }
 
 function checkInput() {
@@ -236,6 +241,11 @@ function drawTail() {
 function draw() {
   // This is the game loop.
   // Snake must be moved before drawing the board.
+  if (gameOver) {
+    console.log('Game over!');
+    return; // TODO: try again?
+  }
+
   checkInput();
 
   moveSnake();
