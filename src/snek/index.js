@@ -14,17 +14,16 @@ const Direction = Object.freeze({ // Enums are not supported in JS as a type.
 });
 
 const BlockTypes = Object.freeze({
-  EGG: 1,
-  HEAD: 2,
-  BODY: 3,
-  TURN: 4,
-  TAIL: 5,
-  WALL: 6,
-  MAX: 7
+  EGG: 'egg',
+  HEAD: 'head',
+  BODY: 'body',
+  TURN: 'turn',
+  TAIL: 'tail',
+  WALL: 'wall',
 });
 
 // The game state.
-let assets = Array(BlockTypes.MAX);
+let assets = {};
 let board = null;
 let snake = null;
 let gameOver = false;
