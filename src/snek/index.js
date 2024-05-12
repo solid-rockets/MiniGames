@@ -4,6 +4,7 @@ const SCREEN_WIDTH_BLOCKS = 25;
 const SCREEN_HEIGHT_BLOCKS = 25;
 const FOOD_WAIT_INC = 5;
 const COUNTDOWN_MAX = 5;
+const BLOCK_SCALE = 2;
 
 const Direction = Object.freeze({ // Enums are not supported in JS as a type.
   KEEP: 0,
@@ -158,8 +159,8 @@ function preload() {
 }
 
 function setup() {
-  const pixelWidth = SCREEN_WIDTH_BLOCKS * BLOCK_SIZE;
-  const pixelHeight = SCREEN_HEIGHT_BLOCKS * BLOCK_SIZE;
+  const pixelWidth = SCREEN_WIDTH_BLOCKS * BLOCK_SIZE * BLOCK_SCALE;
+  const pixelHeight = SCREEN_HEIGHT_BLOCKS * BLOCK_SIZE * BLOCK_SCALE;
 
   createCanvas(pixelWidth, pixelHeight);
   background(0);
@@ -178,7 +179,7 @@ function setup() {
 function drawBlock(asset, x, y) {
   // NOTE: this is good enough for now, but
   // I'll need to rotate the blocks for the turns and body.
-  image(asset, x * BLOCK_SIZE, y * BLOCK_SIZE);
+  image(asset, x * BLOCK_SIZE * BLOCK_SCALE, y * BLOCK_SIZE * BLOCK_SCALE, BLOCK_SIZE * BLOCK_SCALE, BLOCK_SIZE * BLOCK_SCALE);
 }
 
 function drawBoard() {

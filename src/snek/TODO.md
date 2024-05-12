@@ -7,11 +7,11 @@ DONE
 - Input.
 - Egg eating.
 - Self collision.
+- Scale everything.
 - For better input detection: inc FPS but slow down snake.
     - One way to do it is to make FPS 30 but move snake every X frames.
 
 TODO
-- Scale everything.
 - Alternative blocks for orientations:
     - Body
     - Turn
