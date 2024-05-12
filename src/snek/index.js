@@ -1,7 +1,7 @@
 // Various constants for the game.
 const BLOCK_SIZE = 8;
-const SCREEN_WIDTH_BLOCKS = 100;
-const SCREEN_HEIGHT_BLOCKS = 50;
+const SCREEN_WIDTH_BLOCKS = 25;
+const SCREEN_HEIGHT_BLOCKS = 25;
 const FOOD_WAIT_INC = 5;
 
 const Direction = Object.freeze({ // Enums are not supported in JS as a type.
@@ -117,6 +117,7 @@ function setup() {
 
   board = createWalls(createBoard()); // All in setup, no surprises.
   snake = createNewSnake();
+  placeEgg();
 
   frameRate(5);
 }
@@ -200,6 +201,20 @@ function getNextDirForTail() {
   clearBlockAtBodyPartPos(snake.tail);
 }
 
+function placeEgg() {
+  let eggPlaced = false;
+
+  while(!eggPlaced) {
+    const x = Math.floor(Math.random() * SCREEN_WIDTH_BLOCKS);
+    const y = Math.floor(Math.random() * SCREEN_HEIGHT_BLOCKS);
+
+    if (board[y][x] === 0) {
+      board[y][x] = createBlock(BlockTypes.EGG);
+      eggPlaced = true;
+    }
+  }
+}
+
 function moveSnake() {
   // Move the head.
   // The idea is to create a body block under the head before it moves.
@@ -224,6 +239,10 @@ function moveSnake() {
   // Check for self collisions.
 
   // Check for egg collisions.
+  if (board[snake.head.y][snake.head.x].type === BlockTypes.EGG) {
+    snake.wait += FOOD_WAIT_INC;
+    placeEgg();
+  }
 }
 
 function checkInput() {
