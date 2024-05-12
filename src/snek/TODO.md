@@ -11,8 +11,11 @@ DONE
     - One way to do it is to make FPS 30 but move snake every X frames.
 
 TODO
+- Scale everything.
 - Alternative blocks for orientations:
     - Body
     - Turn
 - Randomized positions
+- Change order of movement: move, check, place body immediately.
 - Text: "Game over! Try again? Y/N"
+- Get rid of all TODOs in code.

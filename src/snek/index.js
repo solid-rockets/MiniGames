@@ -16,9 +16,18 @@ const Direction = Object.freeze({ // Enums are not supported in JS as a type.
 const BlockTypes = Object.freeze({
   EGG: 'egg',
   HEAD: 'head',
+  HEAD2: 'head2',
+  HEAD3: 'head3',
+  HEAD4: 'head4',
   BODY: 'body',
   TURN: 'turn',
+  TURN2: 'turn2',
+  TURN3: 'turn3',
+  TURN4: 'turn4',
   TAIL: 'tail',
+  TAIL2: 'tail2',
+  TAIL3: 'tail3',
+  TAIL4: 'tail4',
   WALL: 'wall',
 });
 
@@ -30,6 +39,27 @@ let gameOver = false;
 let moveCountdown = 0;
 
 // SETUP LOGIC.
+function rotateImgCCW(inputImg) {
+  // Keep in mind that all images must be square.
+  //const outputImg = createImage(inputImg.height, inputImg.width);
+  const outputImg = createImage(BLOCK_SIZE, BLOCK_SIZE);
+
+  // This method is not the fastest, but it's good enough for now.
+  inputImg.loadPixels();
+
+  for (let x = 0; x < inputImg.width; x++) {
+    for (let y = 0; y < inputImg.height; y++) {
+      const pixel = inputImg.get(x, y);
+
+      outputImg.set(y, inputImg.width - x - 1, pixel);
+    }
+  }
+
+  outputImg.updatePixels();
+
+  return outputImg;
+}
+
 function loadAssets() {
   // Load images for the game.
   assets[BlockTypes.EGG] = loadImage('./assets/egg.gif');
@@ -38,6 +68,21 @@ function loadAssets() {
   assets[BlockTypes.TURN] = loadImage('./assets/turn.gif');
   assets[BlockTypes.TAIL] = loadImage('./assets/tail.gif');
   assets[BlockTypes.WALL] = loadImage('./assets/wall.gif');
+}
+
+function processAssets() {
+  // Rotate the images for the turns.
+  assets[BlockTypes.HEAD2] = rotateImgCCW(assets[BlockTypes.HEAD]);
+  assets[BlockTypes.HEAD3] = rotateImgCCW(assets[BlockTypes.HEAD2]);
+  assets[BlockTypes.HEAD4] = rotateImgCCW(assets[BlockTypes.HEAD3]);
+
+  assets[BlockTypes.TURN2] = rotateImgCCW(assets[BlockTypes.TURN]);
+  assets[BlockTypes.TURN3] = rotateImgCCW(assets[BlockTypes.TURN2]);
+  assets[BlockTypes.TURN4] = rotateImgCCW(assets[BlockTypes.TURN3]);
+
+  assets[BlockTypes.TAIL2] = rotateImgCCW(assets[BlockTypes.TAIL]);
+  assets[BlockTypes.TAIL3] = rotateImgCCW(assets[BlockTypes.TAIL2]);
+  assets[BlockTypes.TAIL4] = rotateImgCCW(assets[BlockTypes.TAIL3]);
 }
 
 function createBlock(blockType) {
@@ -107,6 +152,11 @@ function createNewSnake() {
   return snake;
 };
 
+function preload() {
+  // NOTE: necessary because it makes sure the images are loaded before setup.
+  loadAssets();
+}
+
 function setup() {
   const pixelWidth = SCREEN_WIDTH_BLOCKS * BLOCK_SIZE;
   const pixelHeight = SCREEN_HEIGHT_BLOCKS * BLOCK_SIZE;
@@ -114,7 +164,7 @@ function setup() {
   createCanvas(pixelWidth, pixelHeight);
   background(0);
 
-  loadAssets();
+  processAssets();
 
   board = createWalls(createBoard()); // All in setup, no surprises.
   snake = createNewSnake();
@@ -179,6 +229,7 @@ function incPosBodyPart(part) {
 
 function createBodyUnderHead() {
   // Decide based on current and next directions.
+  // TODO: I need to add nextDir into turn AND block to determine the orientation.
   const bodyBlock = snake.head.dir === snake.head.nextDir ? 
     createBlock(BlockTypes.BODY) : 
     createBlock(BlockTypes.TURN);
@@ -267,11 +318,39 @@ function checkInput() {
 }
 
 function drawHead() {
-  drawBlock(assets[BlockTypes.HEAD], snake.head.x, snake.head.y);
+  // TODO: refactor with tail.
+  switch (snake.head.dir) {
+    case Direction.UP:
+      drawBlock(assets[BlockTypes.HEAD], snake.head.x, snake.head.y);
+      break;
+    case Direction.LEFT:
+      drawBlock(assets[BlockTypes.HEAD2], snake.head.x, snake.head.y);
+      break;
+    case Direction.DOWN:
+      drawBlock(assets[BlockTypes.HEAD3], snake.head.x, snake.head.y);
+      break;
+    case Direction.RIGHT:
+      drawBlock(assets[BlockTypes.HEAD4], snake.head.x, snake.head.y);
+      break;
+  }
 }
 
 function drawTail() {
-  drawBlock(assets[BlockTypes.TAIL], snake.tail.x, snake.tail.y);
+  // TODO: refactor with head.
+  switch (snake.tail.dir) {
+    case Direction.UP:
+      drawBlock(assets[BlockTypes.TAIL], snake.tail.x, snake.tail.y);
+      break;
+    case Direction.LEFT:
+      drawBlock(assets[BlockTypes.TAIL2], snake.tail.x, snake.tail.y);
+      break;
+    case Direction.DOWN:
+      drawBlock(assets[BlockTypes.TAIL3], snake.tail.x, snake.tail.y);
+      break;
+    case Direction.RIGHT:
+      drawBlock(assets[BlockTypes.TAIL4], snake.tail.x, snake.tail.y);
+      break;
+  }
 }
 
 function draw() {
