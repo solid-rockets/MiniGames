@@ -3,6 +3,7 @@ const BLOCK_SIZE = 8;
 const SCREEN_WIDTH_BLOCKS = 25;
 const SCREEN_HEIGHT_BLOCKS = 25;
 const FOOD_WAIT_INC = 5;
+const COUNTDOWN_MAX = 5;
 
 const Direction = Object.freeze({ // Enums are not supported in JS as a type.
   KEEP: 0,
@@ -27,6 +28,7 @@ let assets = Array(BlockTypes.MAX);
 let board = null;
 let snake = null;
 let gameOver = false;
+let moveCountdown = 0;
 
 // SETUP LOGIC.
 function loadAssets() {
@@ -118,8 +120,9 @@ function setup() {
   board = createWalls(createBoard()); // All in setup, no surprises.
   snake = createNewSnake();
   placeEgg();
+  moveCountdown = COUNTDOWN_MAX;
 
-  frameRate(5);
+  frameRate(30);
 }
 
 // DRAWING LOGIC.
@@ -275,7 +278,12 @@ function draw() {
 
   checkInput();
 
-  moveSnake();
+  if (moveCountdown === 0) {
+    moveSnake();
+    moveCountdown = COUNTDOWN_MAX;
+  } else {
+    moveCountdown--;
+  }
 
   background(0);
   drawBoard();

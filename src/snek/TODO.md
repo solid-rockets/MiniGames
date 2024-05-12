@@ -6,6 +6,8 @@ DONE
 - Wall collision.
 - Input.
 - Egg eating.
+- For better input detection: inc FPS but slow down snake.
+    - One way to do it is to make FPS 30 but move snake every X frames.
 
 TODO
 
@@ -15,5 +17,3 @@ TODO
     - Turn
 - Randomized positions
 - Text: "Game over! Try again? Y/N"
-- For better input detection: inc FPS but slow down snake.
-    - One way to do it is to make FPS 30 but move snake every X frames.
