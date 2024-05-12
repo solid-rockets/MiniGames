@@ -6,12 +6,11 @@ DONE
 - Wall collision.
 - Input.
 - Egg eating.
+- Self collision.
 - For better input detection: inc FPS but slow down snake.
     - One way to do it is to make FPS 30 but move snake every X frames.
 
 TODO
-
-- Self collision.
 - Alternative blocks for orientations:
     - Body
     - Turn

@@ -218,6 +218,10 @@ function placeEgg() {
   }
 }
 
+function setGameOver() {
+  gameOver = true;
+}
+
 function moveSnake() {
   // Move the head.
   // The idea is to create a body block under the head before it moves.
@@ -236,10 +240,13 @@ function moveSnake() {
 
   // Check for wall collisions.
   if (board[snake.head.y][snake.head.x].type === BlockTypes.WALL) {
-    gameOver = true;
+    setGameOver();
   }
 
   // Check for self collisions.
+  if (board[snake.head.y][snake.head.x].type === BlockTypes.BODY) {
+    setGameOver();
+  }
 
   // Check for egg collisions.
   if (board[snake.head.y][snake.head.x].type === BlockTypes.EGG) {
